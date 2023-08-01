@@ -46,26 +46,7 @@
       <div class="container">
         <div class="bg-default">
           <div class="row no-gutters login-row">
-            <div class="col align-self-center px-3 text-center mt-4">
-              <img src="http://www.rakutenfu666.com/upload/8080c6bed5b3003d/8baad3be5ffc3375.png" style="width:100px;height:100px;border-radius: 10px">
-              <p style="margin-top: 10px; font-size: 14px">
-                <b>Rakuten楽天</b>
-              </p>
-              <p style="margin-top: 5px; font-style: italic">貧しい中産階級はお金のために働き、金持ちは彼らのためにお金を働かせます。1111</p>
-              <form class="form-signin mt-3 ">
-                <div class="form-group input-group">
-                  <div class="input-group-prepend">
-                    <button class="btn dropdown-toggle address" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">+81</button>
-                    <div class="dropdown-menu">
-                      <a class="dropdown-item" href="#">+81</a></div>
-                  </div>
-                  <!-- <div class="input-group-prepend"><button class="btn dropdown-toggle address" type="button" data-toggle="dropdown"
-                  aria-haspopup="true" aria-expanded="false"></button><div class="dropdown-menu"><a class="dropdown-item" href="#"></a></div></div>-->
-                  <input type="text" name="tel" class="form-control form-control-lg text-center" placeholder="携帯番号を入力してください" value="" required="" autofocus=""></div>
-                <div class="form-group">
-                  <input type="password" id="inputPassword" name="pwd" class="form-control form-control-lg text-center" placeholder="パスワードを入力してください" value="" required=""></div>
-                <!--<div class="form-group my-4 text-left"><div class="custom-control custom-checkbox"><input type="checkbox" class="custom-control-input" id="rememberme"><label class="custom-control-label" for="rememberme">Remember Me</label></div></div>--></form>
-            </div>
+
           </div>
           <div class="row mx-0 mt-4">
             <div class="col">
@@ -107,7 +88,121 @@
     <script charset="utf-8" src="/static_new/js/common.js"></script>
     <!-- template custom js -->
     <script src="/red/main.js?v=V1.24"></script>
+    <script type="application/javascript">sessionStorage.setItem('login_flag', '1');
+      $(function() {
+        /*检查表单*/
+        function check() {
+          if ($("input[name=tel]").val() == '' || $("input[name=pwd]").val() == '') {
+            $(document).dialog({
+              infoText: 'Please enter account / password'
+            });
+            return false;
+          }
+          return true;
+        }
 
+        /*监听账号input*/
+        $("input[name=tel]").bind("input propertychange",
+        function() {
+          if ($(this).val() !== '') {
+            $('.icon-delete').show();
+          } else {
+            $('.icon-delete').hide();
+          }
+        });
+
+        /*点击删除icon*/
+        $(".icon-delete").on('click',
+        function() {
+          $("input[name=tel]").val('');
+          $('.icon-delete').hide();
+        })
+
+        /*显示or隐藏密码*/
+        $(".icon-eye").on('click',
+        function() {
+          var type = $("input[name=pwd]").attr("type");
+          if (type == 'pwd') {
+            $("input[name=pwd]").attr('type', 'text');
+            return;
+          }
+          $("input[name=pwd]").attr('type', 'pwd');
+        });
+
+        /*点击登录*/
+        $(".login").on('click',
+        function() {
+          if (check()) {
+            var host = window.location.host;
+            if (host.startsWith('localhost')) {
+              form_submit('');
+            } else {
+              /*                    grecaptcha.ready(function() {
+                                                  grecaptcha.execute('6LdC99EZAAAAABfzI41Q48ZSd2Pe2aHA_vJ61go4', {action: 'submit'}).then(function(token) {
+                                                      // Add your logic to submit to your backend server here.
+                                                      form_submit(token);
+                                                  });
+                                              });*/
+              form_submit('');
+            }
+          }
+        });
+
+        function form_submit(reCAPTCHA) {
+          var loading = null;
+          var tel = $("input[name=tel]").val();
+          var pwd = $("input[name=pwd]").val();
+          var jizhu = $("input[name=jizhu]").val();
+          var _csrf_ = "csrf64c86d8339f26";
+          $.ajax({
+            url: "/index/user/do_login.html",
+            data: {
+              tel: tel,
+              pwd: pwd,
+              jizhu: jizhu,
+              '_csrf_': _csrf_,
+              'reCAPTCHA': reCAPTCHA
+            },
+            type: 'POST',
+            beforeSend: function(request) {
+              request.setRequestHeader('User-Token-Csrf', _csrf_);
+              loading = $(document).dialog({
+                type: 'notice',
+                infoIcon: '/static_new/img/loading.gif',
+                infoText: 'loading...',
+                autoClose: 0
+              });
+            },
+            success: function(data) {
+              loading.close();
+              if (data.code == 0) {
+                $(document).dialog({
+                  infoText: data.info
+                });
+                setTimeout(function() {
+                  location.href = "/index/index/home.html"
+                },
+                2000);
+              } else {
+                loading.close();
+                if (data.info) {
+                  $(document).dialog({
+                    infoText: data.info
+                  });
+                } else {
+                  $(document).dialog({
+                    infoText: "Network unstable, please try again at a place with better signal!",
+                    autoClose: 2000
+                  });
+                }
+              }
+            },
+            error: function(data) {
+              loading.close();
+            }
+          });
+        }
+      })</script>
     <!--tj--></body>
 
 </html>
