@@ -2,7 +2,7 @@
 //QQ：8324000
 {
 "wallpaper":"https://picsum.photos/1280/720/?blur=10",
-"spider":"https://joyi911.github.io/a620.jar;md5;09BAF4A03D362D96F0FC14085C343191",
+"spider":"./a620.jar;md5;09BAF4A03D362D96F0FC14085C343191",
 "lives":[{"name":"live","type":0,"url":"./live_tv.txt","playerType":1,"epg":"http://epg.112114.xyz/?ch={name}&date={date}","logo":"https://epg.112114.xyz/logo/{name}.png"}],
 "sites": [
 {"key":"csp_Bdys01","name":"📯哔嘀影视","type":3,"api":"csp_Bdys01","searchable":1,"quickSearch":1,"filterable":1},
